@@ -1,0 +1,31 @@
+/* 
+ * Stripeのinput要素や注文確定ボタン、戻るボタンなどを包括する一番大きなコンテナ要素。
+ */
+ .payment-form-container {
+  margin-top: 100px !important;
+}
+
+.payment-form-container h1 {
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+}
+
+/* 
+* スピナーをラップする要素。
+*/
+#payment-form-spinner {
+  margin: 20px;
+}
+
+#card-element {
+  margin-top: 20px;
+  margin-bottom: 50px;
+}
+
+/*
+* 戻るボタン。
+*/
+.other-actions-container {
+  margin-top: 100px !important;
+}
