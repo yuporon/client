@@ -3,7 +3,8 @@
 // ---------------------------
 // 1. elementsインスタンスを用意する
 // ---------------------------
-var stripe = Stripe("pk_test_xxx");
+//公開鍵入れる場所
+var stripe = Stripe("pk_test_51IKqiNAPAFjKSiCBMxSeSI8LaC4K1zSwDbvbwdRS0pixHjPZobll855vWIRMXf6yL0xOxFcA0SZeeFleKVtPcPuh00bj3uF4lg");
 var elements = stripe.elements();
 
 // 注文情報。サーバではこのJSONを受け取って処理を行う。
