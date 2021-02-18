@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const stripe = require("stripe")("sk_test_xxx");
+const logger = require("../logger");
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -8,6 +9,8 @@ router.get('/', function(req, res, next) {
 });
 
 router.post("/v1/order/payment", async function(req, res, next){
+
+    logger.info("ルータメソッドの処理を開始します. リクエスト : ", req.body);
 
     const { paymentMethodId, paymentIntentId, items, currency, useStripeSdk } = req.body;
 
@@ -24,13 +27,18 @@ router.post("/v1/order/payment", async function(req, res, next){
             use_stripe_sdk: useStripeSdk,
         }
 
+        logger.info("Stripe APIを呼び出します. リクエスト : ", request);
         intent = await stripe.paymentIntents.create(request);
+        logger.info("Stripe APIを呼び出しました. レスポンス : ", intent);
+
     } else if (paymentIntentId) {
         intent = await stripe.paymentIntents.confirm(paymentIntentId);
     }
 
     const response = generateResponse(intent);
 
+    logger.info("ルータメソッドの処理を終了します. レスポンス : ", response);
+    
     res.send(response);
 });
 
