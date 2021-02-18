@@ -16,30 +16,38 @@ router.post("/v1/order/payment", async function(req, res, next){
 
     const total = calculateAmount(req.body.items);
 
-    let intent;
-    if (paymentMethodId) {
-        const request = {
-            amount: total,
-            currency: currency,
-            payment_method: paymentMethodId,
-            confirmation_method: "manual",
-            confirm: true,
-            use_stripe_sdk: useStripeSdk,
+    try { 
+        let intent;
+        if (paymentMethodId) {
+            const request = {
+                amount: total,
+                currency: currency,
+                payment_method: paymentMethodId,
+                confirmation_method: "manual",
+                confirm: true,
+                use_stripe_sdk: useStripeSdk,
+            }
+
+            logger.info("Stripe APIを呼び出します. リクエスト : ", request);
+            intent = await stripe.paymentIntents.create(request);
+            logger.info("Stripe APIを呼び出しました. レスポンス : ", intent);
+
+        } else if (paymentIntentId) {
+            intent = await stripe.paymentIntents.confirm(paymentIntentId);
         }
 
-        logger.info("Stripe APIを呼び出します. リクエスト : ", request);
-        intent = await stripe.paymentIntents.create(request);
-        logger.info("Stripe APIを呼び出しました. レスポンス : ", intent);
+        const response = generateResponse(intent);
 
-    } else if (paymentIntentId) {
-        intent = await stripe.paymentIntents.confirm(paymentIntentId);
+        logger.info("ルータメソッドの処理を終了します. レスポンス : ", response);
+        
+        res.send(response);
+    } catch (e) {
+        logger.error("ルータメソッドの処理中にエラーが発生しました : ", e);
+        const response = generateErrorResponse(e.message);
+
+        res.status(500);
+        res.send(response);
     }
-
-    const response = generateResponse(intent);
-
-    logger.info("ルータメソッドの処理を終了します. レスポンス : ", response);
-    
-    res.send(response);
 });
 
 function calculateAmount(items) {
@@ -89,6 +97,15 @@ function generateResponse(paymentIntent) {
     }
 
     return response;
+}
+
+function generateErrorResponse (error) {
+
+    return {
+        error : {
+        messages : [error]
+        }
+    }
 }
 
 module.exports = router;
